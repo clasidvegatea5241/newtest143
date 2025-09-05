@@ -1,7 +1,7 @@
 name: Clone and Push to New Repo
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:  # Manual trigger from Actions tab
 
 jobs:
   clone-and-push:
@@ -26,18 +26,24 @@ jobs:
           cd main-repo
           git clone https://github.com/exislow/tidal-dl-ng nested-repo
 
-      # 4️⃣ Push everything to a new public repo
+      # 4️⃣ Prepare and push to new repo
       - name: Push to new repo
         run: |
           cd main-repo
+
+          # Remove existing remote if present
+          git remote remove origin || true
+
+          # Reinitialize Git and configure identity
           git init
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git branch -M main
 
           # 🔄 Replace with your actual target repo
-          NEW_REPO="your-username/your-new-repo"
+          NEW_REPO="kishorkumartv000/combined-aio"
 
+          # Add new remote and push
           git remote add origin https://x-access-token:${GH_TOKEN}@github.com/${NEW_REPO}.git
           git add .
           git commit -m "Initial commit with nested repo"
