@@ -1,28 +1,41 @@
-name: test1
+name: Clone and Push to New Repo
 
 on:
-  schedule:
-    - cron: '40 18 * * *'
-  workflow_dispatch:
+  workflow_dispatch:  # Run manually from Actions tab
 
 jobs:
- build:
-
+  clone-and-push:
     runs-on: ubuntu-latest
-    timeout-minutes: 280
-    
-    permissions:
-      contents: read
-      actions: write
-    steps:
-      - name: Debug Time
-        run: date
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: app
-        run: |
-          chmod +x entrypoint.sh
 
-      - name: app run
+    steps:
+      # 1️⃣ Checkout an empty workspace
+      - name: Checkout empty workspace
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2️⃣ Clone the first repo
+      - name: Clone first repo
         run: |
-          bash entrypoint.sh
+          git clone https://github.com/kishorkumartv000/amd-aio-for-curser main-repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHL_TOKEN }}
+
+      # 3️⃣ Go into that repo and clone the second repo inside it
+      - name: Clone second repo inside first
+        run: |
+          cd main-repo
+          git clone https://github.com/exislow/tidal-dl-ng nested-repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHL_TOKEN }}
+
+      # 4️⃣ Create a new repo and push files
+      - name: Push to new repo
+        run: |
+          cd main-repo
+          git init
+          git branch -M main
+          git remote add origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/USERNAME/NEW-REPO.git
+          git add .
+          git commit -m "Initial commit with nested repo"
+          git push -u origin main
