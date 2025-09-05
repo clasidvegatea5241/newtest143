@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GH_TOKEN: ${{ secrets.GHL_TOKEN }}  # Your GitHub token stored as a secret
+      GH_TOKEN: ${{ secrets.GHL_TOKEN }}  # Your GitHub token stored securely
 
     steps:
       - name: Checkout empty workspace
@@ -18,10 +18,12 @@ jobs:
         run: |
           git clone https://github.com/kishorkumartv000/amd-aio-for-curser main-repo
 
-      - name: Clone tidal-dl-ng inside main-repo
+      - name: Copy tidal-dl-ng into main-repo
         run: |
           cd main-repo
-          git clone https://github.com/exislow/tidal-dl-ng tidal-dl-ng
+          git clone https://github.com/exislow/tidal-dl-ng temp-tidal
+          mv temp-tidal tidal-dl-ng
+          rm -rf tidal-dl-ng/.git  # Remove inner .git so it's treated as normal files
 
       - name: Prepare and push to new repo
         run: |
