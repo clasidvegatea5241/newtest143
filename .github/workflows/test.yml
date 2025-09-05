@@ -1,7 +1,7 @@
 name: Clone and Push to New Repo
 
 on:
-  workflow_dispatch:  # Manual trigger from Actions tab
+  workflow_dispatch:
 
 jobs:
   clone-and-push:
@@ -11,22 +11,18 @@ jobs:
       GH_TOKEN: ${{ secrets.GHL_TOKEN }}  # Your GitHub token stored as a secret
 
     steps:
-      # 1️⃣ Checkout an empty workspace
       - name: Checkout empty workspace
         uses: actions/checkout@v4
 
-      # 2️⃣ Clone the first public repo
       - name: Clone amd-aio-for-curser
         run: |
           git clone https://github.com/kishorkumartv000/amd-aio-for-curser main-repo
 
-      # 3️⃣ Clone the second public repo inside the first
-      - name: Clone tidal-dl-ng inside main-repo
+      - name: Add tidal-dl-ng as submodule
         run: |
           cd main-repo
-          git clone https://github.com/exislow/tidal-dl-ng nested-repo
+          git submodule add https://github.com/exislow/tidal-dl-ng nested-repo
 
-      # 4️⃣ Prepare and push to new repo
       - name: Push to new repo
         run: |
           cd main-repo
@@ -40,11 +36,10 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git branch -M main
 
-          # 🔄 Replace with your actual target repo
-          NEW_REPO="kishorkumartv000/combined-aio"
+          # ✅ Push to your actual GitHub account
+          NEW_REPO="clasidvegatea5241/combined-aio"
 
-          # Add new remote and push
           git remote add origin https://x-access-token:${GH_TOKEN}@github.com/${NEW_REPO}.git
           git add .
-          git commit -m "Initial commit with nested repo"
+          git commit -m "Initial commit with submodule"
           git push -u origin main
