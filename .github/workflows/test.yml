@@ -18,12 +18,12 @@ jobs:
         run: |
           git clone https://github.com/kishorkumartv000/amd-aio-for-curser main-repo
 
-      - name: Add tidal-dl-ng as submodule
+      - name: Clone tidal-dl-ng inside main-repo
         run: |
           cd main-repo
-          git submodule add https://github.com/exislow/tidal-dl-ng nested-repo
+          git clone https://github.com/exislow/tidal-dl-ng tidal-dl-ng
 
-      - name: Push to new repo
+      - name: Prepare and push to new repo
         run: |
           cd main-repo
 
@@ -41,5 +41,5 @@ jobs:
 
           git remote add origin https://x-access-token:${GH_TOKEN}@github.com/${NEW_REPO}.git
           git add .
-          git commit -m "Initial commit with submodule"
+          git commit -m "Initial commit with tidal-dl-ng folder"
           git push -u origin main
