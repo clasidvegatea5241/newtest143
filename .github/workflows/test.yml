@@ -1,41 +1,44 @@
 name: Clone and Push to New Repo
 
 on:
-  workflow_dispatch:  # Run manually from Actions tab
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   clone-and-push:
     runs-on: ubuntu-latest
 
+    env:
+      GH_TOKEN: ${{ secrets.GHL_TOKEN }}  # Your GitHub token stored as a secret
+
     steps:
       # 1️⃣ Checkout an empty workspace
       - name: Checkout empty workspace
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # 2️⃣ Clone the first repo
-      - name: Clone first repo
+      # 2️⃣ Clone the first public repo
+      - name: Clone amd-aio-for-curser
         run: |
           git clone https://github.com/kishorkumartv000/amd-aio-for-curser main-repo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GHL_TOKEN }}
 
-      # 3️⃣ Go into that repo and clone the second repo inside it
-      - name: Clone second repo inside first
+      # 3️⃣ Clone the second public repo inside the first
+      - name: Clone tidal-dl-ng inside main-repo
         run: |
           cd main-repo
           git clone https://github.com/exislow/tidal-dl-ng nested-repo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GHL_TOKEN }}
 
-      # 4️⃣ Create a new repo and push files
+      # 4️⃣ Push everything to a new public repo
       - name: Push to new repo
         run: |
           cd main-repo
           git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git branch -M main
-          git remote add origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/USERNAME/NEW-REPO.git
+
+          # 🔄 Replace with your actual target repo
+          NEW_REPO="your-username/your-new-repo"
+
+          git remote add origin https://x-access-token:${GH_TOKEN}@github.com/${NEW_REPO}.git
           git add .
           git commit -m "Initial commit with nested repo"
           git push -u origin main
